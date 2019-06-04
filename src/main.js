@@ -4,14 +4,24 @@ import router from "./router";
 import store from "./store";
 import VueFilterDateFormat from 'vue-filter-date-format'
 import Vuetify from 'vuetify'
+import colors from 'vuetify/es5/util/colors'
 import firebase from 'firebase'
 import 'vuetify/dist/vuetify.min.css'
+import es from 'vee-validate/dist/locale/es'
+import VeeValidate, { Validator } from 'vee-validate'
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
 
 Vue.use(Vuetify)
+Vue.use(ElementUI);
 
 Vue.use(VueFilterDateFormat)
 
 Vue.config.productionTip = false;
+Validator.localize('es', es)
+Vue.use(VeeValidate, {
+  locale: 'es'
+})
 
 const firebaseConfig = {
   apiKey: "AIzaSyBykCUpV6uttnTjE8k2lj_u7AWdhksmqJA",

@@ -9,98 +9,59 @@
       <div class="head-tweet">Tweet</div>
       <div class="head-point">Puntuaciòn</div>
     </div>
-    <div
-      v-for="(row, index) in info"
-      :key="index"
-      class="row grid"
-    >
-      <!-- <v-checkbox
-        class="check"
-        v-model="selected"
-        :value="index"
-      ></v-checkbox>
+    <div v-for="(row, index) in info" :key="index" class="row grid">
+      <v-checkbox class="check" v-model="selected" :value="row.status_id"></v-checkbox>
       <v-avatar size="36px">
-        <img
-          src="https://avatars0.githubusercontent.com/u/9064066?v=4&s=460"
-          alt="Avatar"
-        >
-      </v-avatar>
-      <div class="user">
-        <strong>Cristian Diaz</strong>
-        <p class="text-nick">AngelTitan</p>
-      </div>
-      <div class="date">
-        {{new Date() | dateFormat('DD/MM/YYYY')}} <br />
-        <span>{{new Date() | dateFormat('hh:mm a')}}</span>
-      </div>
-      <div class="description">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Odit distinctio laboriosam tempore. Porro at quas magnam exercitationem doloribus illum ad laborum, debitis fugit, quaerat assumenda et corporis ullam quo labore.</div>
-      <div class="puntuacion">Neutro</div> -->
-      <v-checkbox
-        class="check"
-        v-model="selected"
-        :value="row.status_id"
-      ></v-checkbox>
-      <v-avatar size="36px">
-        <img
-          :src="row.profile_image_url"
-          alt="Avatar"
-        >
+        <img :src="row.profile_image_url" alt="Avatar">
       </v-avatar>
       <div class="user">
         <strong>{{row.name}}</strong>
         <p class="text-nick">{{row.Usuario}}</p>
       </div>
       <div class="date">
-        {{new Date(row.created_at) | dateFormat('DD/MM/YYYY')}} <br />
+        {{new Date(row.created_at) | dateFormat('DD/MM/YYYY')}}
+        <br>
         <span>{{new Date(row.created_at) | dateFormat('hh:mm a')}}</span>
       </div>
       <div class="description">{{row.text}}</div>
-      <div
-        v-if="row.Puntuacion_tuit === 0"
-        class="puntuacion"
-      >Neutro</div>
-      <div
-        v-else-if="row.Puntuacion_tuit > 0"
-        class="puntuacion positivo"
-      >Positivo</div>
-      <div
-        v-else
-        class="puntuacion negativo"
-      >Negativo</div>
+      <div v-if="row.Puntuacion_tuit === 0" class="puntuacion">Neutro</div>
+      <div v-else-if="row.Puntuacion_tuit > 0" class="puntuacion positivo">Positivo</div>
+      <div v-else class="puntuacion negativo">Negativo</div>
+      <v-icon class="go" @click.native="show(row.status_url)">keyboard_arrow_right</v-icon>
     </div>
   </div>
 </template>
 
 <script>
+import Modal from "./modal";
 export default {
+  components: {
+    Modal
+  },
   data() {
     return {
-      selected: []
+      selected: [],
+      dialog: false,
+      infoTeewt: ""
+    };
+  },
+  methods: {
+    show(value) {
+      this.$store.commit("SET_URL", value);
+      window.open(value, "_blank");
     }
   },
-  // methods: {
-  //   select(value) {
-  //     if (this.selected.includes(value)) {
-  //       this.remove(value)
-  //     } else {
-  //       this.selected.push(value)
-  //     }
-  //   },
-  //   remove(value) {
-  //     let index = this.selected.indexOf(value)
-  //     if (index > -1) {
-  //       this.selected.splice(index, 1)
-  //     }
-  //   }
-  // },
   computed: {
     info() {
       if (this.$store.state.infoTwits) {
-        return this.$store.state.infoTwits
+        return this.$store.state.infoTwits;
       }
+    },
+    negativos(){
+      return this.info.filter(teewt => teewt.Puntuacion_tuit < 0)
     }
   }
-}
+};
 </script>
 
 <style scoped>
@@ -127,11 +88,12 @@ export default {
   margin-bottom: 10px;
   transition: all ease 0.3s;
   z-index: -1;
+  text-align: left;
 }
 .row:hover {
   /* background-color: #f4f8f9; */
   box-shadow: 0 0 12px 1px rgba(3, 20, 36, 0.095);
-  z-index: 999;
+  z-index: 10;
   transform: scale(1.005);
 }
 .user {
@@ -183,5 +145,20 @@ export default {
 .head:hover {
   transform: scale(1);
   box-shadow: initial;
+}
+.grid {
+  position: relative;
+  z-index: 10;
+}
+.go {
+  position: absolute;
+  right: -30px;
+  margin-top: 5px;
+  cursor: pointer;
+}
+.go:hover {
+  color: #6a62d2 !important;
+  font-size: 28px;
+  right: -35px;
 }
 </style>

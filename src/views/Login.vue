@@ -1,92 +1,115 @@
 <template>
   <div class="login">
     <div class="left-login">
-      <div
-        v-if="!show"
-        class="wrapper"
+      <transition
+        enter-active-class="animated fadeInLeftBig"
+        leave-active-class="animated fadeOutLeftBig"
       >
-        <h2 class="title-login">Analisis de sentimientos</h2>
-        <form
-          @submit.prevent="register"
-          class="form-signin"
-        >
-          <!-- <input
-            v-model="formRegister.name"
-            placeholder="Nombre"
-            class="form-control"
-            type="text"
-          > -->
-          <input
-            v-model="formRegister.email"
-            placeholder="Correo"
-            class="form-control"
-            type="email"
-          >
-          <input
-            v-model="formRegister.password"
-            placeholder="Contraseña"
-            class="form-control"
-            type="password"
-          >
-          <input
-            type="submit"
-            class="btn-login"
-            :style="show ? 'margin-top:20px': '' "
-            value="Registrarse"
-          ></input>
-        </form>
-        <p class="text-links"> <span
-            @click="show = true"
-            class="forgot"
-          >Ya tengo una cuenta</span></p>
+      <div
+        v-if="err"
+        class="notificacion"
+      >
+        <v-icon class="icon-close">add_circle</v-icon>
+        <p class="text-error">Correo o contraseña invalidos</p>
       </div>
-      <div
-        v-else
-        class="wrapper"
+      </transition>
+      <transition
+        name="custom-classes-transition"
+        enter-to-class="animated fadeInDown"
+        leave-to-class="animated fadeOutUp"
       >
-        <h2 class="title-login">Analisis de sentimientos</h2>
-        <form
-          @submit.prevent="login"
-          class="form-signin"
-        >
-          <input
-            v-model="formLogin.email"
-            placeholder="Email"
-            class="form-control"
-            type="email"
-          >
-          <input
-            v-model="formLogin.password"
-            placeholder="Password"
-            class="form-control"
-            type="password"
-          >
-          <v-checkbox
-            color="#6a62d2"
-            class="checkbox"
-            v-model="checkbox"
-            label="Mantener sesión iniciada"
-          ></v-checkbox>
+        <div v-if="!show" class="wrapper">
+          <h2 class="title-login">Analisis de sentimientos</h2>
+          <form ref="formRegister" @submit.prevent="register" class="form-signin">
+            <input
+              v-model="formRegister.email"
+              placeholder="Correo"
+              class="form-control"
+              type="email"
+              data-vv-name="REmail"
+              data-vv-as=" "
+              v-validate="'required'"
+            >
+            <p class="err">{{ errors.first('REmail') }}</p>
+            <input
+              v-model="formRegister.password"
+              placeholder="Contraseña"
+              class="form-control"
+              type="password"
+              data-vv-name="RPassword"
+              data-vv-as=" "
+              v-validate="'required'"
+            >
+            <p class="err">{{ errors.first('RPassword') }}</p>
+            <input
+              type="submit"
+              class="btn-login"
+              :style="show ? 'margin-top:20px': '' "
+              value="Registrarse"
+            >
+          </form>
+          <p class="text-links">
+            <span @click="show = true" class="forgot">Ya tengo una cuenta</span>
+          </p>
+        </div>
+      </transition>
+      <transition
+        name="otro"
+        enter-to-class="animated fadeInUp"
+        leave-to-class="animated fadeOutDown"
+      >
+        <div v-if="show" class="wrapper">
+          <h2 class="title-login">Analisis de sentimientos</h2>
+          <form ref="formLogin" @submit.prevent="login" class="form-signin">
+            <input
+              v-model="formLogin.email"
+              placeholder="Email"
+              class="form-control"
+              type="email"
+              data-vv-name="LEmail"
+              data-vv-as=" "
+              v-validate="'required'"
+            >
+            <p class="err">{{ errors.first('LEmail') }}</p>
+            <input
+              v-model="formLogin.password"
+              placeholder="Password"
+              class="form-control"
+              type="password"
+              data-vv-name="LPassword"
+              data-vv-as=" "
+              v-validate="'required'"
+            >
+            <p class="err">{{ errors.first('LPassword') }}</p>
+            <v-checkbox
+              color="#6a62d2"
+              class="checkbox"
+              v-model="checkbox"
+              label="Mantener sesión iniciada"
+            ></v-checkbox>
 
-          <input
-            type="submit"
-            class="btn-login"
-            value="Iniciar sesión"
-          ></input>
-        </form>
-        <p class="text-links"> <span class="forgot">¿Olvidaste su contraseña?</span><br><span
-            class="register"
-            @click="show = false"
-          >Resgistrarse</span></p>
-      </div>
+            <input type="submit" class="btn-login" value="Iniciar sesión">
+          </form>
+          <p class="text-links">
+            <span class="forgot">¿Olvidaste su contraseña?</span>
+            <br>
+            <span class="register" @click="show = false">Resgistrarse</span>
+          </p>
+        </div>
+      </transition>
     </div>
     <div class="right">
       <div class="content-text">
-        <p class="title-right">Aplicación para el <br> analisis de sentimientos</p>
-        <p class="description">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Provident animi cupiditate, nobis reprehenderit eligendi harum alias laborum sint earum excepturi pariatur dicta quasi molestias ratione veritatis! Aliquam qui fuga optio?</p>
+        <p class="title-right">
+          Aplicación para el
+          <br>analisis de sentimientos
+        </p>
+        <p
+          class="description"
+        >Lorem ipsum dolor sit amet consectetur, adipisicing elit. Provident animi cupiditate, nobis reprehenderit eligendi harum alias laborum sint earum excepturi pariatur dicta quasi molestias ratione veritatis! Aliquam qui fuga optio?</p>
         <div class="btn-info">Mas información</div>
       </div>
-      <Graphic class="graphic" />
+      <Graphic class="graphic"/>
     </div>
   </div>
 </template>
@@ -101,6 +124,7 @@ export default {
   },
   data() {
     return {
+      err: false,
       formRegister: {
         name: "",
         email: "",
@@ -115,6 +139,12 @@ export default {
     };
   },
   methods: {
+    // errMessage(v) {
+    //   this.err = v;
+    //   setTimeout(() => {
+    //     this.err = false;
+    //   }, 3000);
+    // },
     login() {
       firebase
         .auth()
@@ -124,22 +154,31 @@ export default {
         )
         .then(
           user => this.$router.replace("admin"),
-          error => console.error(error)
+          error => {
+            this.err = true;
+            setTimeout(() => {
+              this.err = false;
+            }, 4000);
+          }
         );
     },
     register() {
-      firebase
-        .auth()
-        .createUserWithEmailAndPassword(
-          this.formRegister.email,
-          this.formRegister.password
-        )
-        .catch(function(error) {
-          // Handle Errors here.
-          var errorCode = error.code;
-          var errorMessage = error.message;
-          // ...
-        });
+      this.$validator.validate().then(result => {
+        if (result) {
+          firebase
+            .auth()
+            .createUserWithEmailAndPassword(
+              this.formRegister.email,
+              this.formRegister.password
+            )
+            .catch(function(error) {
+              // Handle Errors here.
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              // ...
+            });
+        }
+      });
     }
   }
 };
@@ -156,6 +195,7 @@ export default {
 .left-login {
   background-color: #6a62d2;
   display: grid;
+  position: relative;
 }
 .right {
   background-color: #f4f8f9;
@@ -166,15 +206,18 @@ export default {
   text-align: left;
 }
 .wrapper {
+  position: absolute;
   max-width: 400px;
   width: 100%;
+  height: auto;
   background-color: #fff;
-  align-self: center;
-  justify-self: center;
   border-radius: 6px;
-  margin-top: -40px;
   padding-bottom: 20px;
-  transition: all ease 0.3s;
+  top: calc(50% - 250px);
+  left: 0;
+  right: 0;
+  bottom: auto;
+  margin: auto;
 }
 .title-login {
   text-align: center;
@@ -285,5 +328,35 @@ input:focus {
   background-color: #6a62d2;
   color: #fff;
   box-shadow: 0 0 12px 2px rgba(32, 33, 37, 0.137);
+}
+.err {
+  line-height: 1;
+  margin-top: -8px;
+  font-weight: 600;
+  font-size: 12px;
+  color: #f14b5a;
+}
+.notificacion {
+  width: 400px;
+  height: 35px;
+  border: 1px solid rgba(231, 52, 52, 0.835);
+  background-color: rgb(255, 238, 238);
+  border-radius: 4px;
+  margin-left: 10px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+.icon-close {
+  color: #f14b5a !important;
+  transform: rotate(45deg);
+  margin-left: 10px;
+}
+.text-error {
+  font-size: 12px;
+  font-weight: 600;
+  margin: 0 0 0 10px;
+  line-height: 1;
+  color: #911923;
 }
 </style>

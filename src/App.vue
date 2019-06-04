@@ -6,6 +6,7 @@
 
 <style>
 @import "./assets/main.css";
+@import "./assets/animated.css";
 
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;

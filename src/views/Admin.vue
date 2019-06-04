@@ -1,5 +1,5 @@
 <template>
-  <v-app id="inspire">
+  <v-app class="admin" id="inspire" v-loading="loading">
 
     <v-navigation-drawer
       class="content-top"
@@ -8,21 +8,51 @@
       app
       clipped
     >
+    <div class="results">
+      <v-progress-circular
+      :rotate="90"
+      :size="50"
+      :width="8"
+      :value="tweets.length"
+      color="#6a62d2"
+    >
+      {{tweets.length}}
+    </v-progress-circular>
+      <v-progress-circular
+      :rotate="90"
+      :size="50"
+      :width="8"
+      :value="negativos.length"
+      color="rgba(240, 48, 48, 0.781)"
+    >
+      {{negativos.length}}
+    </v-progress-circular>
+    <v-progress-circular
+      :rotate="90"
+      :size="50"
+      :width="8"
+      :value="positivos.length"
+      color="rgba(91, 212, 91, 0.884)"
+    >
+      {{positivos.length}}
+    </v-progress-circular>
+    <v-progress-circular
+      :rotate="90"
+      :size="50"
+      :width="8"
+      :value="neutros.length"
+      color="rgb(181, 181, 181)"
+    >
+      {{neutros.length}}
+    </v-progress-circular>
+    </div>
+    <div class="wrapper-results">
+      <p class="item-result" @click="setTotal">Total</p>
+      <p class="item-result" @click="setNegativos">Negativos</p>
+      <p class="item-result" @click="setPositivos">Positivos</p>
+      <p class="item-result"@click="setNeutros">Neutros</p>
+    </div>
       <v-list dense>
-        <!-- <v-list-tile
-          v-for="item in items"
-          :key="item.text"
-          @click=""
-        >
-          <v-list-tile-action>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>
-              {{ item.text }}
-            </v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile> -->
         <v-subheader class="mt-3 grey--text text--darken-1">USUARIOS</v-subheader>
         <v-list>
           <v-list-tile
@@ -64,7 +94,7 @@
         label="Escriba aquí la palabra clave"
         prepend-inner-icon="search"
         v-model="word"
-        @keyup.enter="getData"
+        @keyup.enter="getData(1)"
         color="#9aacb5"
       ></v-text-field>
       <div
@@ -114,6 +144,7 @@
 <script>
 import listTwits from "@/components/ListTwits";
 import firebase from "firebase";
+import axios from 'axios'
 export default {
   components: {
     // tableInfo,
@@ -121,6 +152,7 @@ export default {
   },
   data: () => ({
     drawer: true,
+    loading: false,
     word: "",
     info: [],
     items: [
@@ -145,15 +177,28 @@ export default {
       if (this.$store.state.infoTwits) {
         return this.$store.state.infoTwits;
       }
+    },
+    negativos(){
+      if (this.tweets) {
+        return this.tweets.filter(teewt => teewt.Puntuacion_tuit < 0)
+      }
+    },
+    neutros(){
+      return this.tweets.filter(teewt => teewt.Puntuacion_tuit == 0)
+    },
+    positivos(){
+      return this.tweets.filter(teewt => teewt.Puntuacion_tuit > 0)
     }
   },
   methods: {
-    getData() {
+    getData(v) {
+      this.loading = v
       axios
-        .get(`https://e58cec56.ngrok.io/tweets?word=${this.word}`)
+        .get(`https://a160f2df.ngrok.io/tweets?word=${this.word}`)
         .then(response => {
           this.info = response.data;
           this.$store.commit("SET_INFO", response.data);
+          this.loading = 0
         });
     },
     logout() {
@@ -161,6 +206,18 @@ export default {
         .auth()
         .signOut()
         .then(() => this.$router.replace("login"));
+    },
+    setNegativos(){
+      this.$store.commit("SET_INFO", this.negativos)
+    },
+    setPositivos(){
+      this.$store.commit("SET_INFO", this.positivos)
+    },
+    setNeutros(){
+      this.$store.commit("SET_INFO", this.neutros)
+    },
+    setTotal(){
+      this.$store.commit("SET_INFO", this.info)
     }
   }
 };
@@ -255,4 +312,31 @@ aside::-webkit-scrollbar-track:active {
 .v-input.v-text-field.v-text-field--enclosed.v-text-field--outline.theme--light {
   margin-top: 20px !important;
 }
+.results {
+  display: flex;
+  /* flex-direction: column; */
+  text-align: left;
+  justify-content: space-around;
+  align-items: flex-start;
+  padding: 10px 10px 0 20px;
+}
+.item-result {
+  display: flex;
+  vertical-align: middle;
+  line-height: 1;
+}
+.wrapper-results {
+  display: flex;
+  justify-content: center;
+  padding: 7px 0 0;
+  width: 90%;
+  margin-left: 20px;
+}
+.item-result{
+  font-size: 12px;
+  color: #021f2e;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
 </style>

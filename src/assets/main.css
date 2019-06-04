@@ -18,3 +18,9 @@ td.text-xs-right.negativo {
 .login .theme--light.v-icon {
   color: #a0a8b6;
 }
+.svg.circular{
+  z-index: 999
+}
+.admin .el-loading-mask{
+  height: 100vh !important;
+}
